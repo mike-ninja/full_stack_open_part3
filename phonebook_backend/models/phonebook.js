@@ -14,10 +14,18 @@ mongoose.connect(url)
     console.log(`error connceting to MongoDD ${error.message}`)
   })
 
+// Defining a schema for the model
 const contactSchema = new mongoose.Schema({
   name: String,
   number: String,
 })
+
+// Degining a model method
+contactSchema.statics.findByNameAndUpdate = function (name, update) {
+  console.log("It goes here")
+  return this.findOneAndUpdate({ name }, update, {new: true})
+  console.log("Here it goes")
+}
 
 contactSchema.set('toJSON', {
   transform: (document, returnedObject) => {
