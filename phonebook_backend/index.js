@@ -19,25 +19,22 @@ app.get('/api/contacts', (request, response) => {
 })
 
 app.post('/api/contacts', (request, response, next) => {
-  const body = request.body
+  const { name, number } = request.body
 
-  if (body.name === undefined || body.number === undefined) {
-    return response.status(400).json({ error: 'input missing' })
-  }
-
-  Contact.findByNameAndUpdate(body.name, { number: body.number })
+  Contact.findByNameAndUpdate(name, { name, number })
     .then(updatedContact => {
       if (updatedContact) {
         response.json(updatedContact)
       } else {
         const newContact = new Contact({
-          name: body.name,
-          number: body.number
+          name,
+          number
         })
 
-        newContact.save().then(savedContact => {
-          response.json(savedContact)
-        })
+        newContact.save()
+          .then(savedContact => {
+            response.json(savedContact)
+          })
       }
     })
     .catch(error => next(error))
@@ -47,7 +44,6 @@ app.get('/api/contacts/:id', (request, response, next) => {
   Contact.findById(request.params.id)
     .then(contact => {
       if (contact) {
-        console.log("Does it reach here?")
         response.json(contact)
       } else {
         response.status(404).json({ error: 'contact not found' })
@@ -94,9 +90,14 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
+
   next(error)
 }
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

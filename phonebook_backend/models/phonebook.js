@@ -16,15 +16,30 @@ mongoose.connect(url)
 
 // Defining a schema for the model
 const contactSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: function(v) {
+        return /^(\d{2,3}-\d{6,})$/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number`
+    },
+    required: [true, 'User phone number required']
+  }
 })
 
 // Degining a model method
 contactSchema.statics.findByNameAndUpdate = function (name, update) {
-  console.log("It goes here")
-  return this.findOneAndUpdate({ name }, update, {new: true})
-  console.log("Here it goes")
+  return this.findOneAndUpdate(
+    { name },
+    update,
+    {new: true, runValidators: true, context: 'query' }
+  )
 }
 
 contactSchema.set('toJSON', {
