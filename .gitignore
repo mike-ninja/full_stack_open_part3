@@ -1,0 +1,8 @@
+/phonebook_backend/node_modules
+/notes_backend/node_modules
+
+/phonebook_backend/build
+/notes_backend/build
+
+*package-lock.json
+*.env

@@ -30,7 +30,7 @@ if (length == 5) {
     number,
   })
 
-  contact.save().then(result => {
+  contact.save().then({
     console.log(`added ${name} number ${number} to phonebook`)
     mongoose.connection.close()
   })
